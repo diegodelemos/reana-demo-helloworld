@@ -101,7 +101,10 @@ manner.
 
 - `workflow.yaml <workflow/yadage/workflow.yaml>`_
 
-**FIXME**
+.. code-block:: console
+
+    $ yadage-run . workflow/yadage/workflow.yaml -p sleeptime=2
+
 
 REANA file
 ==========

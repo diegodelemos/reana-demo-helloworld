@@ -4,17 +4,20 @@ stages:
     scheduler:
       scheduler_type: 'singlestep-stage'
       parameters:
-        name: {stages: init, output: name, unwrap: True}
-        delay: {stages: init, output: delay, unwrap: True}
+        sleeptime: {stages: init, output: sleeptime, unwrap: True}
+        inputsdir: '{workdir}/../inputs'
+        codedir: '{workdir}/../code'
+        # We don't write to {workdir}/../greetings.txt because this is mounted as RO inside docker
         outputfile: '{workdir}/greetings.txt'
       step:
         process:
           process_type: 'string-interpolated-cmd'
-          cmd: 'python helloworld.py --name "{name}" --sleeptime {delay} --outputfile "{outputfile}"'
+          cmd: 'python {codedir}/helloworld.py --sleeptime {sleeptime} --outputfile {outputfile} --inputfile {inputsdir}/names.txt'
         publisher:
           publisher_type: 'frompar-pub'
           outputmap:
             outputfile: outputfile
         environment:
           environment_type: 'docker-encapsulated'
-          image: 'reanahub/reana-demo-helloworld'
+          image: 'python'
+          imagetag: '2.7'
