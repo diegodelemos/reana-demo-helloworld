@@ -5,14 +5,13 @@ stages:
       scheduler_type: 'singlestep-stage'
       parameters:
         sleeptime: {stages: init, output: sleeptime, unwrap: True}
-        inputsdir: '{workdir}/../inputs'
-        codedir: '{workdir}/../code'
-        # We don't write to {workdir}/../greetings.txt because this is mounted as RO inside docker
+        inputfile: {stages: init, output: inputfile, unwrap: true}
+        helloworld: {stages: init, output: helloworld, unwrap: true}
         outputfile: '{workdir}/greetings.txt'
       step:
         process:
           process_type: 'string-interpolated-cmd'
-          cmd: 'python {codedir}/helloworld.py --sleeptime {sleeptime} --outputfile {outputfile} --inputfile {inputsdir}/names.txt'
+          cmd: 'python {helloworld} --sleeptime {sleeptime} --outputfile {outputfile} --inputfile {inputfile}'
         publisher:
           publisher_type: 'frompar-pub'
           outputmap:

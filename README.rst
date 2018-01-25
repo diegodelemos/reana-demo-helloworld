@@ -101,9 +101,19 @@ manner.
 
 - `workflow.yaml <workflow/yadage/workflow.yaml>`_
 
+Since yadage only accepts one input directory as parameter we are going to create a wrapper directory which will contain links to `inputs` and `outputs` directories:
+
 .. code-block:: console
 
-    $ yadage-run . workflow/yadage/workflow.yaml -p sleeptime=2
+   $ mkdir yadage-input
+   $ lndir `pwd`/inputs yadage-inputs/inputs
+   $ lndir `pwd`/code yadage-inputs/code
+
+Once we have done this, we can run yadage providing this convenience directory as input.
+
+.. code-block:: console
+
+    $ yadage-run . workflow/yadage/workflow.yaml -p sleeptime=2 -p namesfile=input/names.txt -p helloworldpy=code/helloworld.py -d initdir=`pwd`/yadage-inputs
 
 
 REANA file
@@ -151,4 +161,28 @@ Run the example on REANA cloud
 We can now install the REANA client and submit the hello world example to run on
 some particular REANA cloud instance:
 
-**FIXME**
+.. code-block:: console
+
+   $ export REANA_SERVER_URL=http://192.168.99.100:31201
+   $ reana-client workflow create -f reana.yaml
+   [INFO] Validating REANA specification file: /Users/rodrigdi/reana/reana-demo-helloworld/reana.yaml
+   [INFO] Connecting to http://192.168.99.100:31201
+   {u'message': u'Workflow workspace created', u'workflow_id': u'57c917c8-d979-481e-ae4c-8d8b9ffb2d10'}
+   $ export REANA_WORKON="57c917c8-d979-481e-ae4c-8d8b9ffb2d10"
+   $ cd code && reana-client code upload helloworld.py
+   [INFO] REANA Server URL ($REANA_SERVER_URL) is: http://192.168.99.100:31201
+   [INFO] Workflow "57c917c8-d979-481e-ae4c-8d8b9ffb2d10" selected
+   Uploading helloworld.py ...
+   File helloworld.py was successfully uploaded.
+   $ cd inputs && reana-client inputs upload names.txt
+   [INFO] REANA Server URL ($REANA_SERVER_URL) is: http://192.168.99.100:31201
+   [INFO] Workflow "57c917c8-d979-481e-ae4c-8d8b9ffb2d10" selected
+   Uploading names.txt ...
+   File names.txt was successfully uploaded.
+   $ reana-client workflow start
+   [INFO] REANA Server URL ($REANA_SERVER_URL) is: http://192.168.99.100:31201
+   [INFO] Workflow `57c917c8-d979-481e-ae4c-8d8b9ffb2d10` selected
+   Workflow `57c917c8-d979-481e-ae4c-8d8b9ffb2d10` has been started.
+   [INFO] Connecting to http://192.168.99.100:31201
+   {u'status': u'running', u'organization': u'default', u'message': u'Workflow successfully launched', u'user': u'00000000-0000-0000-0000-000000000000', u'workflow_id': u'57c917c8-d979-481e-ae4c-8d8b9ffb2d10'}
+   Workflow `57c917c8-d979-481e-ae4c-8d8b9ffb2d10` has been started.
